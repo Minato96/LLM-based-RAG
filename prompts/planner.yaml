@@ -1,0 +1,19 @@
+_type: "prompt"
+input_variables: ["user_query"]
+template: |
+  You are an expert Information Retrieval Planner.
+  
+  USER QUERY: "{user_query}"
+  
+  Your task is to generate 1-3 precise search queries to find relevant information in a technical knowledge base.
+  
+  RULES:
+  1. If the user query is simple greetings (e.g. "hi"), return "search_needed": false.
+  2. For technical questions, break them down into specific keywords.
+  3. Output MUST be valid JSON.
+  
+  EXAMPLE OUTPUT:
+  {{
+    "search_needed": true,
+    "queries": ["project budget 2024", "cost analysis report"]
+  }}
