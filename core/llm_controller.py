@@ -6,7 +6,7 @@ from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 class LLMController:
     def __init__(self):
         # We use temperature=0 for strict, factual reasoning
-        self.llm = ChatOllama(model="llama3", temperature=0)
+        self.llm = ChatOllama(model="llama3", temperature=0,format="json")
 
     def _load_prompt(self, filename):
         with open(f"prompts/{filename}", "r") as f:
@@ -14,17 +14,15 @@ class LLMController:
         return ChatPromptTemplate.from_template(config["template"])
 
     def plan_search(self, user_query):
-        # 1. Load the "Planner" Brain
-        prompt = self._load_prompt("planner.yaml")
-        
-        # 2. Force JSON output
-        chain = prompt | self.llm | JsonOutputParser()
-        
-        try:
-            return chain.invoke({"user_query": user_query})
-        except Exception as e:
-            # Fallback if LLM creates bad JSON
-            return {"search_needed": False}
+            prompt = self._load_prompt("planner.yaml")
+            chain = prompt | self.llm | JsonOutputParser()
+            
+            try:
+                return chain.invoke({"user_query": user_query})
+            except Exception as e:
+                # PRINT THE ERROR so we can see what happened
+                print(f"❌ PLANNER ERROR: {e}") 
+                return {"search_needed": False}
 
     def generate_answer(self, user_query, context):
         # 1. Load the "Analyst" Brain
